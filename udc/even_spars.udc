@@ -1,0 +1,113 @@
+## PURPOSE:
+# Adds evenly spaced spars to a wing.
+# Wing must be the only body on the stack.
+# Spars for the wing are restored by
+#  `restore spars i`  with 1<i<N+2
+
+## USAGE:
+#  Variable       Description
+#   thickness      Thickness of the spar.
+#                   Enter 0 for sheet bodies.
+#                   Default is 0.
+#   span           Span length of wing.
+#                   Assertion made for non-positive span.
+#                   Default is 0.
+#   c_root         Root chord length of wing.
+#                   Assertion made for non-positive c_root.
+#                   Default is 0.
+#   c_tip          Tip chord length of wing.
+#                   Assertion made for non-positive c_tip.
+#                   Default is 0.
+#   sweep_ang      Sweep angle of the wing.
+#                   Assertion made for angles between +/-90 deg.
+#                   Default is 0.
+#   w_thickness    Thickness of wing at root chord.
+#                   Assertion made for non-positive w_thickness.
+#                   Default is 0.
+#   o_x            Local wing origin, X-component.
+#                   Local wing origin is the front-most position 
+#                   of the wing root, centered in thickness.
+#   o_y            Local wing origin, Y-component.
+#                   Local wing origin is the front-most position 
+#                   of the wing root, centered in thickness.
+#   o_z            Local wing origin, Z-component.
+#                   Local wing origin is the front-most position 
+#                   of the wing root, centered in thickness.
+#   num_spars      Number of spars to add.
+#                   Default is 0.
+
+## WING SCHEMATIC:
+#
+#   .--> Y
+#   |              origin
+#   v            _ \                 
+#  X             |  *-------______   _
+#                |  |             \  |
+#                |  |              | | 
+#         c_root |  |             /  | c_tip
+#                _  |_______------   - 
+#                  
+#                   |------span----|
+
+
+## ASSUMPTIONS:
+#  - A solid body of the wing is on the stack
+#  - Only the wing is on the stack
+#  - The wing is in the X-Y plane
+#  - The wing points in the the -X direction
+
+
+## Gather user input
+interface thickness   in 0
+interface span        in 0
+interface c_root      in 0
+interface c_tip       in 0
+interface sweep_ang   in 0
+interface w_thickness in 0
+interface o_x         in 0
+interface o_y         in 0
+interface o_z         in 0
+interface num_spars   in 0
+
+## Utility variables
+set true  1
+set false 0
+
+## Check user input
+set is_possible true
+ifthen num_spars   lt 0
+  set is_possible false
+endif
+
+assert is_possible true
+
+## Construct Spar
+# store wing on local stack
+store wing
+
+patbeg i num_spars+2
+  # Avoid doing outer most spar due to sheet-sheet 
+  # intersection problem
+  ifthen i eq 1 or i eq num_spars+2
+  else
+
+    restore right_wing
+    set c_percent (i-1)/(num_spars+1)
+
+    udparg $$/make_spar thickness   thickness
+    udparg $$/make_spar c_percent   c_percent
+    udparg $$/make_spar span        span
+    udparg $$/make_spar c_root      c_root
+    udparg $$/make_spar c_tip       c_tip
+    udparg $$/make_spar sweep_ang   sweep_ang
+    udparg $$/make_spar w_thickness w_thickness
+    udparg $$/make_spar o_x         o_x
+    udparg $$/make_spar o_y         o_y
+    udparg $$/make_spar o_z         o_z
+
+    udprim $$/make_spar
+    store spars i 0
+
+  endif
+patend
+# return to user

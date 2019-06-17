@@ -1,0 +1,157 @@
+## PURPOSE:
+# Adds a single spar to a wing.
+# Wing must be the only body on the stack.
+# Spar for the wing is the only body left on the stack.
+
+## USAGE:
+#  Variable       Description
+#   thickness      Thickness of the spar.
+#                   Enter 0 for sheet bodies.
+#                   Default is 0.
+#   c_percent      Placement of center as percent of root chord.
+#                   Wing root is at 0.0 c_percent.
+#                   Wing tip is at 1.0 c_percent.
+#                   Default is 0.
+#   span           Span length of wing.
+#                   Assertion made for non-positive span.
+#                   Default is 0.
+#   c_root         Root chord length of wing.
+#                   Assertion made for non-positive c_root.
+#                   Default is 0.
+#   c_tip          Tip chord length of wing.
+#                   Assertion made for non-positive c_tip.
+#                   Default is 0.
+#   sweep_ang      Sweep angle of the wing.
+#                   Assertion made for angles between +/-90 deg.
+#                   Default is 0.
+#   w_thickness    Thickness of wing at root chord.
+#                   Assertion made for non-positive w_thickness.
+#                   Default is 0.
+#   o_x            Local wing origin, X-component.
+#                   Local wing origin is the front-most position 
+#                   of the wing root, centered in thickness.
+#   o_y            Local wing origin, Y-component.
+#                   Local wing origin is the front-most position 
+#                   of the wing root, centered in thickness.
+#   o_z            Local wing origin, Z-component.
+#                   Local wing origin is the front-most position 
+#                   of the wing root, centered in thickness.
+
+## WING SCHEMATIC:
+#
+#   .--> Y
+#   |              origin
+#   v            _ \                 
+#  X             |  *-------______   _
+#                |  |             \  |
+#                |  |              | | 
+#         c_root |  |             /  | c_tip
+#                _  |_______------   - 
+#                  
+#                   |------span----|
+
+
+## ASSUMPTIONS:
+#  - A solid body of the wing is on the stack
+#  - Only the wing is on the stack
+#  - The wing is in the X-Y plane
+#  - The wing points in the the -X direction
+
+
+## Gather user input
+interface thickness   in 0
+interface c_percent   in 0
+interface span        in 0
+interface c_root      in 0
+interface c_tip       in 0
+interface sweep_ang   in 0
+interface w_thickness in 0
+interface o_x         in 0
+interface o_y         in 0
+interface o_z         in 0
+
+## Utility variables
+set true  1
+set false 0
+
+## Check user input
+set is_possible true
+ifthen thickness   lt 0
+  set is_possible false
+elseif c_percent   lt 0.0
+  set is_possible false
+elseif c_percent   gt 1.0
+  set is_possible false
+elseif span        le 0
+  set is_possible false
+elseif c_root      le 0
+  set is_possible false
+elseif c_tip       lt 0
+  set is_possible false
+elseif sweep_ang   lt -90
+  set is_possible false
+elseif sweep_ang   gt 90
+  set is_possible false
+elseif w_thickness lt 0
+  set is_possible false
+endif
+
+assert is_possible true
+
+## Construct Spar
+# store wing on local stack
+store wing
+
+# utility points
+set a_x    span*tand(sweep_ang)+o_x
+set a_y    span+o_y
+
+set b_x    a_x+c_percent*c_tip
+set b_y    span+o_y
+
+set c_x    c_percent*c_root+o_x
+set c_y    o_y
+
+set dx     b_x-c_x
+set dy     b_y-c_y
+
+set gamma  atan2d(dx,dy)
+set fix    thickness*tand(gamma)
+# `fix` accounts for extending the tip of the spar 
+# so that that the whole thickness is flush with the
+# end of the wing
+
+set length hypot(dx,dy)+fix
+
+# create rectangular outline
+skbeg  0   0   0   1
+  linseg length 0           0
+  linseg length w_thickness 0
+  linseg 0      w_thickness 0
+  linseg 0      0           0
+skend  0
+
+# extrude to declared thickness
+ifthen thickness gt 0
+  extrude 0 0 thickness
+endif
+
+# rotate and translate into position
+rotatex  90         0 0 
+rotatez  (90-gamma) 0 0 
+
+translate o_x o_y o_z
+translate 0   0   -w_thickness/2
+
+set disp c_percent*c_root
+translate disp 0 0
+
+store spar
+
+# trim spar to match wing
+restore spar
+restore wing
+
+intersect
+
+# return to user

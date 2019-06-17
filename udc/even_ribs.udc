@@ -1,0 +1,102 @@
+## PURPOSE:
+# Adds a evenly spaced ribs to a wing.
+# Wing must be the only body on the stack.
+# Ribs for the wing are restored by
+#  `restore ribs i`  with 1<i<N+2
+
+## USAGE:
+#  Variable       Description
+#   thickness      Thickness of the rib.
+#                   Enter 0 for sheet bodies.
+#                   Default is 0.
+#   span           Span length of wing.
+#                   Assertion made for non-positive span.
+#                   Default is 0.
+#   c_root         Root chord length of wing.
+#                   Assertion made for non-positive c_root.
+#                   Default is 0.
+#   w_thickness    Thickness of wing at root chord.
+#                   Assertion made for non-positive w_thickness.
+#                   Default is 0.
+#   o_x            Local wing origin, X-component.
+#                   Local wing origin is the front-most position 
+#                   of the wing root, centered in thickness.
+#   o_y            Local wing origin, Y-component.
+#                   Local wing origin is the front-most position 
+#                   of the wing root, centered in thickness.
+#   o_z            Local wing origin, Z-component.
+#                   Local wing origin is the front-most position 
+#                   of the wing root, centered in thickness.
+#   num_ribs       The number of ribs to add with even spacing.
+#                   Default is 0.
+#   sweep_ang      Sweep angle of the wing.
+#                   Default is 0.
+
+## WING SCHEMATIC:
+#
+#   .--> Y
+#   |              origin
+#   v            _ \                 
+#  X             |  *-------______   _
+#                |  |             \  |
+#                |  |              | | 
+#         c_root |  |             /  | c_tip
+#                _  |_______------   - 
+#                  
+#                   |------span----|
+
+
+## ASSUMPTIONS:
+#  - A solid body of the wing is on the stack
+#  - Only the wing is on the stack
+#  - The wing is in the X-Y plane
+#  - The wing points in the the -X direction
+
+
+## Gather user input
+interface thickness   in 0
+interface span        in 0
+interface c_root      in 0
+interface w_thickness in 0
+interface o_x         in 0
+interface o_y         in 0
+interface o_z         in 0
+interface num_ribs    in 0
+interface sweep_ang   in 0
+
+## Utility variables
+set true  1
+set false 0
+
+set is_possible true
+ifthen num_ribs     lt 0
+  set  is_possible  false
+endif
+
+assert is_possible true
+
+patbeg i num_ribs+2
+  # Avoid doing outer most rib due to sheet-sheet 
+  # intersection problem
+  ifthen i eq 1 or i eq num_ribs+2
+  else
+    restore right_wing
+    set s_percent (i-1)/(num_ribs+1)
+
+    udparg $$/make_rib thickness   thickness
+    udparg $$/make_rib s_percent   s_percent
+    udparg $$/make_rib span        span
+    udparg $$/make_rib c_root      c_root
+    udparg $$/make_rib w_thickness w_thickness
+    udparg $$/make_rib o_x         o_x
+    udparg $$/make_rib o_y         o_y
+    udparg $$/make_rib o_z         o_z
+    udparg $$/make_rib sweep_ang   sweep_ang
+
+    udprim $$/make_rib
+    store ribs i 0
+
+  endif
+patend
+
+# return to user

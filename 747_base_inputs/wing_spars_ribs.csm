@@ -1,0 +1,74 @@
+despmtr series_w           GRASP_NACA_SERIES
+despmtr skin_thickness     0.01
+despmtr rib_thickness      GRASP_RIB_THICKNESS
+despmtr spar_thickness     GRASP_SPAR_THICKNESS
+set num_ribs    GRASP_NUM_RIBS
+set num_spars   GRASP_NUM_SPARS
+
+dimension  wing     3  5  1
+#                     x                   y            z     chord             angle
+despmtr    wing    " 0.00;                0.0;         0.0;  GRASP_CHORD_ROOT;  0.00;\
+                     GRASP_SWEEP_LENGTH;  GRASP_SPAN;  0.0;  GRASP_CHORD_TIP;   0.00;"
+
+## Build the wing with skin offset
+set wing_with_skin_y_pos            wing[2,2]+rib_thickness
+set prescaled_skin_thickness_root   skin_thickness/wing[1,4]
+set prescaled_skin_thickness_tip    skin_thickness/wing[2,4]
+## Build the wing core
+mark
+   udprim    naca      Series    series_w
+   rotatez   -wing[1,5]   0   0
+   rotatex   90           0   0
+   scale     wing[1,4]
+   translate wing[1,1]    wing[1,2]   wing[1,3]
+
+   udprim    naca      Series    series_w 
+   rotatez   -wing[2,5]   0   0
+   rotatex   90           0   0
+   scale     wing[2,4]
+   translate wing[2,1]    wing[2,2]  wing[2,3]
+rule
+store right_wing_oml
+
+## Add ribs and spars
+set span           wing[2,2]-wing[1,2]
+set cRoot          wing[1,4]
+set cTip           wing[2,4]
+set drop           wing[2,1]-wing[1,1]
+set sweepAngle     atan2d(drop,span)
+set wing_thickness wing[1,3]
+set o_x            wing[1,1]
+set o_y            wing[1,2]
+set o_z            wing[1,3]
+
+udparg $$/even_ribs thickness   rib_thickness
+udparg $$/even_ribs span        span
+udparg $$/even_ribs c_root      cRoot
+udparg $$/even_ribs w_thickness wing_thickness
+udparg $$/even_ribs o_x         o_x
+udparg $$/even_ribs o_y         o_y
+udparg $$/even_ribs o_z         o_z
+udparg $$/even_ribs num_ribs    num_ribs
+udprim $$/even_ribs
+
+restore right_wing
+
+udparg $$/even_spars thickness   spar_thickness
+udparg $$/even_spars span        span
+udparg $$/even_spars c_root      cRoot
+udparg $$/even_spars c_tip       cTip
+udparg $$/even_spars sweep_ang   sweepAngle
+udparg $$/even_spars w_thickness wing_thickness
+udparg $$/even_spars o_x         o_x
+udparg $$/even_spars o_y         o_y
+udparg $$/even_spars o_z         o_z
+udparg $$/even_spars num_spars   num_spars
+udprim $$/even_spars
+
+restore right_wing_oml
+
+GRASP_RESTORE_DUMP_RIBS
+
+GRASP_RESTORE_DUMP_SPARS
+
+end
