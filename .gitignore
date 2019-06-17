@@ -1,0 +1,37 @@
+# Ignore the following...
+
+# Vim's swap files
+*.sw*
+
+# LaTeX log, aux, and pdf
+**/*write_up/*.log
+**/*write_up/*.aux
+**/*write_up/*.out
+**/*write_up/*.pdf
+workspace
+
+# Any build directory
+**/build
+**/*build*/
+
+# STP files
+*.stp
+*.STP
+
+# msh files
+*.msh
+
+# Port Journals
+port*.jrnl
+
+# VTK files
+*.vtk
+
+# Any exo files starting with results
+results*.exo*
+
+# Any backup dirs
+backup*
+
+# Compiled python code
+*.pyc
