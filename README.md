@@ -16,3 +16,4 @@ Once the above are installed, adjust the `aux/setup.sh` file to point
 to the executables. Also install the `*.udc` files into ESP's
 `udc/` directory.
 
+test
