@@ -91,6 +91,7 @@ udparg $$/even_ribs o_x         o_x
 udparg $$/even_ribs o_y         o_y
 udparg $$/even_ribs o_z         o_z
 udparg $$/even_ribs num_ribs    num_ribs
+udparg $$/even_ribs sweep_ang   sweepAngle
 udprim $$/even_ribs
 
 restore right_wing
