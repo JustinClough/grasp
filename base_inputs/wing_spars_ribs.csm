@@ -78,7 +78,7 @@ set cRoot          wing[1,4]
 set cTip           wing[2,4]
 set drop           wing[2,1]-wing[1,1]
 set sweepAngle     atan2d(drop,span)
-set wing_thickness 10.0
+set wing_thickness wing[1,4]
 set o_x            wing[1,1]
 set o_y            wing[1,2]
 set o_z            wing[1,3]
