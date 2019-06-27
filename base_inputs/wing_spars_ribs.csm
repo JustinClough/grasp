@@ -1,4 +1,4 @@
-despmtr series_w           0505
+despmtr series_w           GRASP_NACA_SERIES
 despmtr skin_thickness     0.01
 despmtr rib_thickness      GRASP_RIB_THICKNESS
 despmtr spar_thickness     GRASP_SPAR_THICKNESS
@@ -6,9 +6,9 @@ set num_ribs    GRASP_NUM_RIBS
 set num_spars   GRASP_NUM_SPARS
 
 dimension  wing     3  5  1
-#                     x       y      z   chord  angle
-despmtr    wing    " 0.00;  0.0;   0.0;  9.74;  0.00;\
-                     3.00;  7.56;  0.0;  2.98;  0.00;"
+#                     x                     y           z    chord              angle
+despmtr    wing    " 0.00;                0.0;         0.0;  GRASP_CHORD_ROOT;  0.00;\
+                     GRASP_SWEEP_LENGTH;  GRASP_SPAN;  0.0;  GRASP_CHORD_TIP;   0.00;"
 
 ## Build the wing with skin offset
 set wing_with_skin_y_pos            wing[2,2]+rib_thickness
