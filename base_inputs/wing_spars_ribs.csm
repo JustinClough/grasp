@@ -69,8 +69,8 @@ subtract
 store right_wing_oml
 
 ## Write the wing oml to file
-restore right_wing_oml
-dump wing_oml.stp 1 0
+# restore right_wing_oml
+# dump wing_oml.stp 1 0
 
 ## Add ribs and spars
 set span           wing[2,2]-wing[1,2]
