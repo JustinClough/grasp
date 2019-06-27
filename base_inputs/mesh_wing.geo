@@ -20,7 +20,7 @@ wing_bottom_surfaces() = Surface In BoundingBox{  0.0-eps, 0.0-eps,  -10.0-eps,
 // Store as physical surface
 N = #wing_bottom_surfaces();
 If (N < 1)
-  Print("Failed to find lowest surface!");
+  Printf("Failed to find lowest surface!");
   Exit;
 EndIf
 
