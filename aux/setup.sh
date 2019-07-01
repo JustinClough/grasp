@@ -1,8 +1,12 @@
 #!/bin/bash
 
 # Modify the below to match your system
-GRASP_ROOT=/home/jlclough/research/grasp
+
 GRASP_ALBANY_EXE=/home/jlclough/research/Albany/build/src/Albany
+
+GRASP_ROOT=/home/kafoster/Desktop/grasp
+
+
 GRASP_ESP_EXE=/home/jlclough/research/EngSketchPad/bin/serveCSM
 GRASP_GMSH_EXE=/home/pogo/gmsh-4.2.0-Linux64/bin/gmsh
 
